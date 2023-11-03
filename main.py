@@ -45,7 +45,6 @@ def download_file(file_id: str) -> None:
         for part in tqdm.tqdm(range(CHUNKS)):
             downloader.next_chunk()
 
-
 if __name__ == "__main__":
     print("Sending request...")
     req = requests.get(BASE_URL)

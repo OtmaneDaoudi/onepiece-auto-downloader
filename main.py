@@ -31,16 +31,18 @@ def download_file(file_id):
     # Request the file's metadata from Google Drive.
     file_metadata = service.files().get(fileId=file_id, fields='size,name').execute()
 
-    print(file_metadata)
     file_name = file_metadata['name']
     file_size = int(file_metadata['size'])
+
+    print(f'{"Size(Mb):" :<10}{file_size / 1024 / 1024 :<8.2f}')
+    print(f'{"Name:" :<10}{file_name}')
 
     # Create a request to download the file.
     request = service.files().get_media(fileId=file_id)
     with open(OUTPUT_DIR+f'{file_name}', 'wb') as file:
         downloader = MediaIoBaseDownload(
-            file, request, chunksize=(file_size + 500) / CHUNKS) # 500 is added to ensure the last chunk is the last
-        
+            file, request, chunksize=(file_size + 500) / CHUNKS)  # 500 is added to ensure the last chunk is the last
+
         for part in tqdm.tqdm(range(CHUNKS)):
             _, done = downloader.next_chunk()
 
@@ -62,8 +64,8 @@ if __name__ == "__main__":
     episode_name = episode.text
     episode_link = base64.b64decode(episode["onclick"][13:-2]).decode()
 
-    print(f'Latest episode: {episode_name}')
-    print(f'Link: {episode_link}')
+    print(f'{"Episode:" :<10}{episode_name}')
+    # print(f'Link: {episode_link :<50}')
 
     # prompt
     req = requests.get(episode_link)
@@ -74,4 +76,4 @@ if __name__ == "__main__":
 
     file_id = re.findall("id=.*", fhd_drive_link)[0][3:]
 
-    download_file("0B1MVW1mFO2zmX1dDb0ZTMzd1YW8")
+    download_file(file_id)

@@ -63,7 +63,9 @@ if __name__ == "__main__":
 
     req = requests.get(episode_link)
     soup = BeautifulSoup(req.text, 'html5lib')
-    print("Getting latest episode link...")
+
+    episode_date = soup.find('div', {"class": 'user-post-info'}).text.strip()
+    print(f'{"Date:" :<10}{episode_date}')
 
     fhd_drive_link = base64.b64decode(soup.findAll(
         'ul', {"class": "quality-list"})[-1]('li')[1].a["data-url"]).decode()

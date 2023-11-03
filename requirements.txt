@@ -1,1 +1,4 @@
-beautifulsoup4 == 4.12.2
+beautifulsoup4 >= 4.12.2
+drive >= 0.4.4
+gdown >= 4.7.1
+tqdm >= 4.66.1

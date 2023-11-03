@@ -32,3 +32,5 @@ print(f'Link: {episode_link}')
 # prompt
 req = requests.get(episode_link)
 soup = BeautifulSoup(req.text, 'html5lib')
+
+

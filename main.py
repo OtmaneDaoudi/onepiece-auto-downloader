@@ -15,12 +15,15 @@ import tqdm
 
 # URL to the list of episodes
 BASE_URL = "https://witanime.com/anime/one-piece/"
-# where the downloaded episode will be placed"
+
 OUTPUT_DIR = f"{os.getenv('USERPROFILE')}\\Desktop\\"
+
+# Download parts
 CHUNKS = 20
 
 
-def download_file(file_id):
+def download_file(file_id: str) -> None:
+    """ Download a file from google drive using it's ID """
     creds, _ = google.auth.default()
 
     # create drive api client
@@ -35,19 +38,15 @@ def download_file(file_id):
     print(f'{"Size(Mb):" :<10}{file_size / 1024 / 1024 :<8.2f}')
     print(f'{"Name:" :<10}{file_name}')
 
-    # Create a request to download the file.
     request = service.files().get_media(fileId=file_id)
     with open(OUTPUT_DIR+f'{file_name}', 'wb') as file:
         downloader = MediaIoBaseDownload(
             file, request, chunksize=(file_size + 500) / CHUNKS)  # 500 is added to ensure the last chunk is the last
-
         for part in tqdm.tqdm(range(CHUNKS)):
-            _, done = downloader.next_chunk()
-
+            downloader.next_chunk()
 
 if __name__ == "__main__":
     print("Sending request...")
-
     req = requests.get(BASE_URL)
     if req.status_code != 200:
         print("Error occured while requesting base URL")
@@ -56,18 +55,15 @@ if __name__ == "__main__":
     print("Parsing HTML...")
     html = req.text
     soup = BeautifulSoup(html, "html5lib")
-
     episode = soup.findAll("div", {"class": "DivEpisodeContainer"})[-1].h3.a
 
     episode_name = episode.text
     episode_link = base64.b64decode(episode["onclick"][13:-2]).decode()
-
     print(f'{"Episode:" :<10}{episode_name}')
-    # print(f'Link: {episode_link :<50}')
 
-    # prompt
     req = requests.get(episode_link)
     soup = BeautifulSoup(req.text, 'html5lib')
+    print("Getting latest episode link...")
 
     fhd_drive_link = base64.b64decode(soup.findAll(
         'ul', {"class": "quality-list"})[-1]('li')[1].a["data-url"]).decode()

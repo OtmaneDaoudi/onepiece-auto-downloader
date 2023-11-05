@@ -8,9 +8,8 @@ import sys
 import requests
 from bs4 import BeautifulSoup
 import base64
-import re
-
 import tqdm
+from urllib import parse
 
 
 # URL to the list of episodes
@@ -70,6 +69,6 @@ if __name__ == "__main__":
     fhd_drive_link = base64.b64decode(soup.findAll(
         'ul', {"class": "quality-list"})[-1]('li')[1].a["data-url"]).decode()
 
-    file_id = re.findall("id=.*", fhd_drive_link)[0][3:]
+    file_id = parse.parse_qs(parse.urlparse(fhd_drive_link).query)['id'][0]
 
     download_file(file_id)
